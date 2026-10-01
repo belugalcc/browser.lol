@@ -1,0 +1,14 @@
+{
+  "name": "browser-lol-proxy",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A transparent Cloudflare Worker reverse proxy for browser.lol pages.",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/worker.js && node --check test/worker.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.146.0"
+  },
+  "type": "module"
+}
