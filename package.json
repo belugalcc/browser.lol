@@ -8,7 +8,7 @@
     "check": "node --check src/worker.js && node --check test/worker.test.js"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260929.0",
-    "wrangler": "^4.40.0"
-  }
+    "wrangler": "^4.146.0"
+  },
+  "type": "module"
 }
