@@ -1,14 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isAllowedPath, requestHeaders, responseHeaders } from '../src/worker.js';
+import { proxyTarget, requestHeaders, responseHeaders } from '../src/worker.js';
 
-test('only exposes the requested pages and their required static assets', () => {
-  assert.equal(isAllowedPath('/en/create'), true);
-  assert.equal(isAllowedPath('/en/viewer'), true);
-  assert.equal(isAllowedPath('/_next/static/chunks/main.js'), true);
-  assert.equal(isAllowedPath('/img/logo.svg'), true);
-  assert.equal(isAllowedPath('/en/pricing'), false);
-  assert.equal(isAllowedPath('/'), false);
+test('forwards every request path and query string to the configured upstream', () => {
+  assert.equal(
+    proxyTarget('https://proxy.example/en/pricing?currency=USD', 'https://browser.lol').href,
+    'https://browser.lol/en/pricing?currency=USD',
+  );
+  assert.equal(
+    proxyTarget('https://proxy.example/arbitrary/path', 'https://browser.lol').href,
+    'https://browser.lol/arbitrary/path',
+  );
 });
 
 test('uses the upstream host and removes hop-by-hop request headers', () => {

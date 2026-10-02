@@ -1,11 +1,6 @@
 # browser.lol proxy worker
 
-A narrowly scoped Cloudflare Worker reverse proxy for these browser.lol routes:
-
-- `/en/create`
-- `/en/viewer`
-
-It proxies the upstream response transparently, including required Next.js assets and images. It deliberately **does not** inject, modify, or remove browser.lol UI, account requirements, paid-feature prompts, advertisements, or access controls.
+A Cloudflare Worker reverse proxy for all browser.lol paths. It forwards every request it receives to the matching path on the configured browser.lol upstream, preserving the method and query string. It deliberately **does not** inject, modify, or remove browser.lol UI, account requirements, paid-feature prompts, advertisements, or access controls.
 
 ## Deploy
 
@@ -26,4 +21,4 @@ npm run check
 
 ## Route behavior
 
-Requests to the two supported pages, Next.js assets (`/_next/`), logo and favicon assets are sent upstream while retaining query strings and request methods. Other paths return `404` to keep the proxy scope explicit. Upstream cookie `Domain` attributes are removed so cookies can be stored on the custom proxy host.
+Every request path is sent upstream while retaining query strings and request methods. Upstream cookie `Domain` attributes are removed so cookies can be stored on the custom proxy host.

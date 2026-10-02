@@ -1,5 +1,4 @@
 const DEFAULT_UPSTREAM_ORIGIN = 'https://browser.lol';
-const ALLOWED_PAGE_PATHS = new Set(['/en/create', '/en/viewer']);
 const HOP_BY_HOP_HEADERS = new Set([
   'connection',
   'keep-alive',
@@ -15,8 +14,9 @@ function upstreamOrigin(environment) {
   return environment.UPSTREAM_ORIGIN || DEFAULT_UPSTREAM_ORIGIN;
 }
 
-function isAllowedPath(pathname) {
-  return ALLOWED_PAGE_PATHS.has(pathname) || pathname.startsWith('/_next/') || pathname.startsWith('/img/') || pathname === '/favicon.ico';
+function proxyTarget(requestUrl, origin) {
+  const url = new URL(requestUrl);
+  return new URL(url.pathname + url.search, origin);
 }
 
 function requestHeaders(request, origin) {
@@ -46,15 +46,11 @@ function responseHeaders(response) {
 
 export default {
   async fetch(request, environment) {
-    const url = new URL(request.url);
-    if (!isAllowedPath(url.pathname)) {
-      return new Response('Not found', { status: 404 });
-    }
-
-    const target = new URL(url.pathname + url.search, upstreamOrigin(environment));
+    const origin = upstreamOrigin(environment);
+    const target = proxyTarget(request.url, origin);
     const upstreamRequest = new Request(target, {
       method: request.method,
-      headers: requestHeaders(request, upstreamOrigin(environment)),
+      headers: requestHeaders(request, origin),
       body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
       redirect: 'manual',
     });
@@ -70,4 +66,4 @@ export default {
   },
 };
 
-export { isAllowedPath, requestHeaders, responseHeaders };
+export { proxyTarget, requestHeaders, responseHeaders };
